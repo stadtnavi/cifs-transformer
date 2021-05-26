@@ -28,6 +28,6 @@ def main(config_file, outfile):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', dest='config', default=os.environ.get('CIFS_CONFIG', 'config.json'))
-    parser.add_argument('-o', dest='outfile', required=False, default='-', nargs='?', type=argparse.FileType('w'))
+    parser.add_argument('-o', dest='outfile', required=False, default='-', nargs='?', type=argparse.FileType('w', encoding='utf-8'))
     args = parser.parse_args()
     main(args.config, args.outfile)	

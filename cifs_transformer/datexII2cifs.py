@@ -58,6 +58,7 @@ class DatexII2CifsTransformer():
 	def parse(self, datex2file):
 		if datex2file.startswith('http'):
 			r = requests.get(datex2file)
+			r.encoding = 'UTF-8'
 			return ET.fromstring(r.text)
 		else:
 			return ET.parse(datex2file).getroot()
