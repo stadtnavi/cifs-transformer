@@ -5,7 +5,6 @@ import datetime
 import requests
 
 INCIDENT_TYPE_MAPPPING = {
-	# TODO Map further types, even if not part of official standard
 	"roadClosed": "ROAD_CLOSED",
 	"carriagewayClosures": "ROAD_CLOSED",
 	"newRoadworksLayout": "CONSTRUCTION",
@@ -24,8 +23,8 @@ class DatexII2CifsTransformer():
 		
 	def roadworksName(self, situationRecord):
 		for generalPublicComment in situationRecord.findall("d:generalPublicComment", ns):
-				if 'roadworksName' in generalPublicComment.find('d:commentExtension/d:commentExtended/d:commentType2', ns).text:
-					return generalPublicComment.find('d:comment/d:values/d:value', ns).text
+			if 'roadworksName' in generalPublicComment.find('d:commentExtension/d:commentExtended/d:commentType2', ns).text:
+				return generalPublicComment.find('d:comment/d:values/d:value', ns).text
 		return None
 
 	def roadName(self, situationRecord):
