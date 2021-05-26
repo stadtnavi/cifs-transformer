@@ -62,6 +62,40 @@ class DatexII2CifsTransformer():
 		else:
 			return ET.parse(datex2file).getroot()
 
+	def is_referenced_as_cause(self, situation, situationRecord):
+		situationRecordId = situationRecord.get('id')
+		managedCause = situation.find("d:situationRecord/d:cause/d:managedCause/[@id='{}']".format(situationRecordId), ns)
+
+		return not managedCause is None
+
+	def should_skip(self, situation, situationRecord):
+		situationRecordId = situationRecord.get('id')
+		if "-gegen" in situationRecordId:
+			# roadworks in oposite direction are handled via directions attribute
+			# Note: This is a BW specific encoding which will not work out for other datasets
+			return True
+
+		(starttime, endtime) = self.get_start_end_time(situationRecord)
+		if datetime.datetime.now().astimezone() > datetime.datetime.fromisoformat(endtime):
+			return True
+
+		if self.is_referenced_as_cause(situation, situationRecord):
+			return True
+
+		return False
+
+	def detect_direction(self, situation, situationRecord):
+		situationRecordId = situationRecord.get('id')
+		inverse_direction_id = situationRecordId.replace("-sperrung","-gegen-sperrung")
+		return 'BOTH_DIRECTIONS' if situation.find("d:situationRecord[@id='{}']".format(inverse_direction_id), ns) else 'ONE_DIRECTION'
+				
+	def get_start_end_time(self, situationRecord):
+		validity = situationRecord.find('d:validity/d:validityTimeSpecification', ns)
+		endtime = validity.find('d:overallEndTime',ns).text
+		starttime = validity.find('d:overallStartTime',ns).text
+
+		return (starttime, endtime)
+
 	def transform(self, datex2file, format = 'cifs'):
 		'''
 		Transforms situation records into cifs-roadworks, like e.g.:
@@ -88,9 +122,7 @@ class DatexII2CifsTransformer():
 		for situation in payload.findall('d:situation', ns	):
 			overallSituation = situation.find('d:situationExtension/d:situationExtended/d:overallSituation', ns)
 			for situationRecord in situation.findall('d:situationRecord', ns):
-				validity = situationRecord.find('d:validity/d:validityTimeSpecification', ns)
-				endtime = validity.find('d:overallEndTime',ns).text
-				if datetime.datetime.now().astimezone() > datetime.datetime.fromisoformat(endtime):
+				if self.should_skip(situation, situationRecord):
 					continue
 				
 				polyline = situationRecord.find('d:groupOfLocations/d:linearExtension/d:linearExtended/d:gmlLineString/d:posList', ns)
@@ -111,11 +143,7 @@ class DatexII2CifsTransformer():
 						"coordinates": self.pairwise([float(i) for i in geometry.split()])
 					}
 
-				situationRecordId = situationRecord.get('id')
-				if "-gegen" in situationRecordId:
-					continue
-				inverse_direction_id = situationRecordId.replace("-sperrung","-gegen-sperrung")
-				direction = 'BOTH_DIRECTIONS' if situation.find("d:situationRecord[@id='{}']".format(inverse_direction_id), ns) else 'ONE_DIRECTION'
+				(starttime, endtime) = self.get_start_end_time(situationRecord)
 				closure = {
 					'id': situationRecord.get('id'),
 					'type': self.incidentType(situationRecord),
@@ -123,9 +151,9 @@ class DatexII2CifsTransformer():
 					'location': {
 						'polyline': geometry,
 				    	'street': self.roadName(situationRecord),
-				    	'direction': direction,
+				    	'direction': self.detect_direction(situation, situationRecord),
 					},
-					'starttime': validity.find('d:overallStartTime',ns).text,	
+					'starttime': starttime,	
 					'endtime': endtime,
 					'description': self.roadworksName(overallSituation),
 					'reference': self.reference	
