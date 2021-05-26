@@ -1,0 +1,14 @@
+{
+	"sources": [
+		{
+			"reference": "HBG",
+			"type": "CSV",
+			"url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-xkaaS5t5c2fZ23SSUFiYy5nFzeWA7W-HS178-st8XVPwXIA8AyWJijJ2xUw4eHSUMm1on96kGH8c/pub?gid=0&single=true&output=csv"
+		},
+		{
+			"reference": "SVZ-BW",
+			"type": "DATEXII",
+			"url": "https://data.mfdz.de/DATEXII_Arbeitsstellen_SVZ_BW/body.xml"
+		}
+	]
+}
