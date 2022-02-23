@@ -7,7 +7,7 @@ Google Waze's CIFS format is a simple format to publish road incidents like traf
 cifs_transfomer.datexII2cifs transforms a DATEXII MDM-Arbeitsstellen-Profil 4-00-00 file into a CIFS Format.
 
 ```
-python -m cifs_transformer.datexII2cifs -d 'https://data.mfdz.de/DATEXII_Arbeitsstellen_SVZ_BW/body.xml' > cifs.json
+python -m cifs_transformer.datexII2cifs 'https://data.mfdz.de/DATEXII_Arbeitsstellen_SVZ_BW/body.xml' > cifs.json
 ```
 
 ## Transforming CSV file into CIFS format

@@ -1,3 +1,4 @@
+
 import argparse
 import json
 import xml.etree.ElementTree as ET
@@ -186,9 +187,9 @@ def main(datexfile, outfile, reference, format):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('datex2file', help='DATEX2 file')
+    parser.add_argument('datex2file', help='DATEX2 file or URL')
     parser.add_argument('-f', dest='format', required=False, default='cifs', choices=['cifs', 'geojson'])
     parser.add_argument('-o', dest='outfile', required=False, default='-', nargs='?', type=argparse.FileType('w'))
     parser.add_argument('-r', dest='reference', required=False, default='SVZ-BW')
     args = parser.parse_args()
-    main(args.datex2file, args.outfile, args.reference, args.format)	
+    main(args.datex2file, args.outfile, args.reference, args.format)
