@@ -1,5 +1,7 @@
 from cifs_transformer.csv2cifs import Csv2Cifs
 from cifs_transformer.datexII2cifs import DatexII2CifsTransformer
+from cifs_transformer.cifs2cifs import Cifs2CifsTransformer
+
 import argparse
 import datetime
 import json
@@ -13,6 +15,8 @@ def main(config_file, outfile):
 	for source in config['sources']:
 		if source['type'] == 'DATEXII':
 			source_incidents = DatexII2CifsTransformer(source['reference']).transform(source['url'])
+		elif source['type'] == 'CIFS':
+			source_incidents = Cifs2CifsTransformer(source['reference']).transform(source['url'])
 		else:
 			source_incidents = Csv2Cifs().transform(source['url'])
 
