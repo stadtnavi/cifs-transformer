@@ -64,6 +64,7 @@
               "ACCIDENT",
               "CONSTRUCTION",
               "HAZARD",
+              "JAM",
               "ROAD_CLOSED"
             ]
           },
