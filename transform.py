@@ -4,6 +4,7 @@ from cifs_transformer.cifs2cifs import Cifs2CifsTransformer
 
 import argparse
 import datetime
+import logging
 import json
 import os
 
@@ -13,15 +14,17 @@ def main(config_file, outfile):
 
 	incidents = []
 	for source in config['sources']:
-		if source['type'] == 'DATEXII':
-			source_incidents = DatexII2CifsTransformer(source['reference']).transform(source['url'])
-		elif source['type'] == 'CIFS':
-			source_incidents = Cifs2CifsTransformer(source['reference']).transform(source['url'])
-		else:
-			source_incidents = Csv2Cifs().transform(source['url'])
+		try:
+			if source['type'] == 'DATEXII':
+				source_incidents = DatexII2CifsTransformer(source['reference']).transform(source['url'])
+			elif source['type'] == 'CIFS':
+				source_incidents = Cifs2CifsTransformer(source['reference']).transform(source['url'])
+			else:
+				source_incidents = Csv2Cifs().transform(source['url'])
 
-		incidents.extend(source_incidents['incidents'])
-
+			incidents.extend(source_incidents['incidents'])
+		except:
+			logging.error("Could not parse %s", source)
 	result = { 
 		"incidents": incidents,
 		"timestamp": datetime.datetime.now().isoformat()
