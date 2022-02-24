@@ -16,7 +16,8 @@ class Cifs2CifsTransformer():
 		if cifsfile.startswith('http'):
 			r = requests.get(cifsfile)
 			r.encoding = 'UTF-8'
-			return json.loads(r.text)
+			text = r.text.replace('\r', '')
+			return json.loads(text)
 		else:
 			with open(cifsfile) as f:
 				return json.load(f)
